@@ -92,7 +92,11 @@ void	pipe_process(t_pipex *data, char **envp)
 	}
 	data->fd2 = open(data->file2, O_TRUNC | O_CREAT | O_RDWR, 0666);
 	if (data->fd2 < 0)
-		handle_error(data, "Error open outfile");
+	{
+		perror("Error open outfile");
+		exit(EXIT_FAILURE);
+	}
+		// handle_error(data, "Error open outfile");
 	if (pipe(data->pipefd) < 0)
 		handle_error(data, "Error creating pipe");
 	data->pid1 = fork();
