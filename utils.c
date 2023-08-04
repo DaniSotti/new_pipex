@@ -12,7 +12,7 @@
 
 #include "pipex.h"
 
-void	handle_error(t_pipex *data, const char *message)
+void	close_error(t_pipex *data, const char *message)
 {
 	perror(message);
 	ft_free_array(data->cmd_args);
@@ -24,6 +24,12 @@ void	handle_error(t_pipex *data, const char *message)
 		close(data->dup_fd[0]);
 	if (data->dup_fd[1] != -1)
 		close(data->dup_fd[1]);
+	exit(EXIT_FAILURE);
+}
+
+void	handle_error(const char *message)
+{
+	perror(message);
 	exit(EXIT_FAILURE);
 }
 

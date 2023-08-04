@@ -18,7 +18,7 @@ char	*find_path(char **envp, t_pipex *data, char *cmd)
 
 	i = 0;
 	if (!cmd || empty_str(cmd))
-		handle_error(data, "empty string or no command");
+		close_error(data, "empty string or no command");
 	if (access(cmd, X_OK | F_OK) == 0)
 		return (cmd);
 	while (ft_strncmp("PATH", *envp, 4))
@@ -40,45 +40,39 @@ char	*find_path(char **envp, t_pipex *data, char *cmd)
 
 void	first_child_process(t_pipex *data, char **envp)
 {
-	int	i;
-
-	i = 0;
 	data->dup_fd[0] = dup2(data->pipefd[1], STDOUT_FILENO);
 	if (data->dup_fd[0] == -1)
-		handle_error(data, "Error dup2");
+		close_error(data, "Error dup2");
 	close(data->pipefd[0]);
 	close(data->pipefd[1]);
 	data->dup_fd[1] = dup2(data->fd1, STDIN_FILENO);
 	if (data->dup_fd[1] == -1)
-		handle_error(data, "Error dup2");
+		close_error(data, "Error dup2");
 	close(data->fd1);
 	close(data->fd2);
 	data->cmd_args = ft_split(data->cmd1, ' ');
 	data->cmd = find_path(envp, data, data->cmd_args[0]);
 	if (!data->cmd)
-		handle_error(data, "command 1 not valid");
+		close_error(data, "command 1 not valid");
 	exit(execve(data->cmd, data->cmd_args, envp));
 }
 
 void	second_child_process(t_pipex *data, char **envp)
 {
-	int	i;
-
-	i = 0;
 	data->dup_fd[0] = dup2(data->pipefd[0], STDIN_FILENO);
 	if (data->dup_fd[0] == -1)
-		handle_error(data, "Error dup2");
+		close_error(data, "Error dup2");
 	close(data->pipefd[0]);
 	close(data->pipefd[1]);
 	data->dup_fd[1] = dup2(data->fd2, STDOUT_FILENO);
 	if (data->dup_fd[1] == -1)
-		handle_error(data, "Error dup2");
+		close_error(data, "Error dup2");
 	close(data->fd1);
 	close(data->fd2);
 	data->cmd_args = ft_split(data->cmd2, ' ');
 	data->cmd = find_path(envp, data, data->cmd_args[0]);
 	if (!data->cmd)
-		handle_error(data, "command 2 not valid");
+		close_error(data, "command 2 not valid");
 	exit(execve(data->cmd, data->cmd_args, envp));
 }
 
@@ -86,19 +80,12 @@ void	pipe_process(t_pipex *data, char **envp)
 {
 	data->fd1 = open(data->file1, O_RDONLY);
 	if (data->fd1 < 0)
-	{
-		perror("Error open infile");
-		exit(EXIT_FAILURE);
-	}
+		handle_error("Error open infile");
 	data->fd2 = open(data->file2, O_TRUNC | O_CREAT | O_RDWR, 0666);
 	if (data->fd2 < 0)
-	{
-		perror("Error open outfile");
-		exit(EXIT_FAILURE);
-	}
-		// handle_error(data, "Error open outfile");
+		handle_error("Error open outfile");
 	if (pipe(data->pipefd) < 0)
-		handle_error(data, "Error creating pipe");
+		close_error(data, "Error creating pipe");
 	data->pid1 = fork();
 	if (data->pid1 == 0)
 		first_child_process(data, envp);

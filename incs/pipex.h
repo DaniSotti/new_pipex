@@ -42,7 +42,8 @@ typedef struct s_pipex
 	char	*cmd;
 }	t_pipex;
 
-void	handle_error(t_pipex *data, const char *message);
+void	close_error(t_pipex *data, const char *message);
+void	handle_error(const char *message);
 int		empty_str(char *str);
 void	free_paths(t_pipex *data);
 char	*find_path(char **envp, t_pipex *data, char *cmd);
