@@ -1,6 +1,11 @@
-Acerola
-Banana
-Jabuticaba
-Maca
-Manga
-Seringuela
+fruits2.txt
+fruits.txt
+incs
+libft
+Makefile
+pipex
+pipex.c
+pipex.o
+README.md
+utils.c
+utils.o

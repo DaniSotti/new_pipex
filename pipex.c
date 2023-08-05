@@ -12,22 +12,22 @@
 
 #include "pipex.h"
 
-char	*find_path(char **envp, t_pipex *data, char *cmd)
+char	*find_path(char **envp, t_pipex *data)
 {
 	int	i;
 
 	i = 0;
-	if (!cmd || empty_str(cmd))
+	if (!data->cmd_args[0] || empty_str(data->cmd_args[0]))
 		close_error(data, "empty string or no command");
-	if (access(cmd, X_OK | F_OK) == 0)
-		return (cmd);
+	if (access(data->cmd_args[0], X_OK | F_OK) == 0)
+		return (data->cmd_args[0]);
 	while (ft_strncmp("PATH", *envp, 4))
 		envp++;
 	data->cmd_paths = ft_split(*envp + 5, ':');
 	while (data->cmd_paths[i] != NULL)
 	{
 		data->tmp = ft_strjoin(data->cmd_paths[i], "/");
-		data->final_cmd = ft_strjoin(data->tmp, cmd);
+		data->final_cmd = ft_strjoin(data->tmp, data->cmd_args[0]);
 		free(data->tmp);
 		if (access(data->final_cmd, X_OK | F_OK) == 0)
 			return (data->final_cmd);
@@ -51,7 +51,7 @@ void	first_child_process(t_pipex *data, char **envp)
 	close(data->fd1);
 	close(data->fd2);
 	data->cmd_args = ft_split(data->cmd1, ' ');
-	data->cmd = find_path(envp, data, data->cmd_args[0]);
+	data->cmd = find_path(envp, data);
 	if (!data->cmd)
 		close_error(data, "command 1 not valid");
 	exit(execve(data->cmd, data->cmd_args, envp));
@@ -70,7 +70,7 @@ void	second_child_process(t_pipex *data, char **envp)
 	close(data->fd1);
 	close(data->fd2);
 	data->cmd_args = ft_split(data->cmd2, ' ');
-	data->cmd = find_path(envp, data, data->cmd_args[0]);
+	data->cmd = find_path(envp, data);
 	if (!data->cmd)
 		close_error(data, "command 2 not valid");
 	exit(execve(data->cmd, data->cmd_args, envp));

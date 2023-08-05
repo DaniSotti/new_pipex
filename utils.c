@@ -14,7 +14,13 @@
 
 void	close_error(t_pipex *data, const char *message)
 {
-	perror(message);
+	if (!data->cmd_args[0] || empty_str(data->cmd_args[0]))
+	{
+		errno = 1;
+		perror(message);
+	}
+	else
+		perror(message);
 	ft_free_array(data->cmd_args);
 	if (data->pipefd[0] != -1)
 		close (data->pipefd[0]);

@@ -15,13 +15,11 @@
 
 # include <stdio.h>
 # include <string.h>
-// // # include <stdlib.h>
-// # include <unistd.h>
 # include <fcntl.h>
-// # include <errno.h>
 # include <sys/wait.h>
 # include <sys/types.h>
 # include "../libft/incs/libft.h"
+# include <errno.h>
 
 typedef struct s_pipex
 {
@@ -46,7 +44,7 @@ void	close_error(t_pipex *data, const char *message);
 void	handle_error(const char *message);
 int		empty_str(char *str);
 void	free_paths(t_pipex *data);
-char	*find_path(char **envp, t_pipex *data, char *cmd);
+char	*find_path(char **envp, t_pipex *data);
 void	first_child_process(t_pipex *data, char **envp);
 void	second_child_process(t_pipex *data, char **envp);
 void	pipe_process(t_pipex *data, char **envp);
